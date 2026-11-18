@@ -1,5 +1,0 @@
-.env
-scene1-out/
-*.pcap
-__pycache__/
-*.pyc
