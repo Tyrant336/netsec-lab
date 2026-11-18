@@ -1,0 +1,4 @@
+﻿.env
+scene1-out/
+__pycache__/
+*.pyc
