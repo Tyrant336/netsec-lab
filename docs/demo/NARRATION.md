@@ -60,7 +60,7 @@ After that GARP, Alice’s ICMP Ethernet destination is Eve again.
 
 ## 2:28–2:34  Jev on
 
-Same three claims. Now Jev runs `RESTORE_BINDINGS`: pin, five corrective is-at, drop Eve at `s1`.
+Same three claims. Now Jev runs `RESTORE_BINDINGS`: pin, five corrective is-at, then a DAI allowlist on Eve’s port — ARP is allowed only if `dl_src`, `arp_sha`, and `arp_spa` match Eve’s trusted binding.
 
 ## 2:34–2:46  Scene 5 terminal
 
@@ -76,11 +76,11 @@ Look: opcode 2, sender IP is the trusted address, sender MAC is the **true** MAC
 
 ## 3:14–3:24  Scene 5 — honest ICMP
 
-Ethernet destination is Bob `:03`, `ttl=64`. Later spoofs from Eve: zero packets at the victims.
+Ethernet destination is Bob `:03`, `ttl=64`. After DAI, later spoofs from Eve: zero packets at the victims.
 
 ## 3:24–3:36  Scene 6 terminal
 
-Not spoofing. Forty who-has with Eve’s own valid binding. Class `ARP_DDOS_FLOOD`. Zero replies to the flood. Puzzle on.
+Not spoofing. Forty who-has with Eve’s own valid binding, so `ddos_anomaly` fires, not a MAC conflict. Class `ARP_DDOS_FLOOD`. Zero replies to the flood. Seed-bound puzzle on.
 
 ## 3:36–3:46  Scene 6 — flood packet
 
@@ -88,11 +88,11 @@ Forty of these who-has frames. No is-at. The flood is dropped.
 
 ## 3:46–4:06  Scene 6 packet 41 — puzzle challenge
 
-Expand the ARP trailer. JSON on the wire: `JEV_ARP_PUZZLE_CHALLENGE`, `k=16`, seed hash, target `S=27603`.
+Expand the ARP trailer. JSON on the wire: `JEV_ARP_PUZZLE_CHALLENGE`, `k=16`, seed hash, target `S=27603`. Nonces must start with that seed.
 
 ## 4:06–4:24  Scene 6 packet 42 — solution
 
-Alice’s who-has carries `JEV_ARP_PUZZLE_SOLUTION` with nonce pair `x1`, `x2`. Solved in about one millisecond. Verify in zero point zero nine milliseconds.
+Alice’s who-has carries `JEV_ARP_PUZZLE_SOLUTION` with seed-prefixed `x1`, `x2`. Solved in about one millisecond. Defender verify is about **zero point zero one four milliseconds**. A replay of the same pair is rejected.
 
 ## 4:24–4:34  Scene 6 packet 43 — the only is-at
 
@@ -100,7 +100,7 @@ Only this reply is sent: `10.0.0.3 is at 00:00:00:00:00:03`. After a valid proof
 
 ## 4:34–4:46  Results
 
-Before Jev: poisoned caches, `ttl=63`, floods get answers. After: detection, sub-200 ms repair, zero leakage, puzzle-gated resolution.
+Before Jev: poisoned caches, `ttl=63`, floods get answers. After: detection including header-splits, sub-200 ms repair, DAI leakage of zero, puzzle verify at 0.014 ms.
 
 ## 4:46–5:00  Close
 
